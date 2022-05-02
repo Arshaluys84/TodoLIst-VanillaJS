@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>DOM</title>
+  </head>
+  <body>
+    <div class="todo">
+      <h1>todos</h1>
+      <div class="todos">
+        <div class="new-todo">
+          <form>
+            <div class="selectAll">&or;</div>
+            <label for="title"></label>
+            <input
+              class="new-todo"
+              autofocus
+              type="text"
+              id="title"
+              name="title"
+              placeholder="What needs to be done?"
+              required
+            />
+          </form>
+        </div>
+        <div class="todo-list">
+          <div class="todo-item"></div>
+          <div class="filter">
+            <span id="filter-left"> 0 todos left</span>
+
+            <span class="filter-all">All</span>
+            <span class="filter-active">Active</span>
+            <span class="filter-completed">Completed</span>
+            <span class="filter-clear">Clear completed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
