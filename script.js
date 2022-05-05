@@ -1,4 +1,5 @@
-let arr = [];
+let todos = [];
+
 const selectAll = document.querySelector(".selectAll");
 const input = document.getElementById("title");
 const filter = document.querySelector(".filter");
@@ -10,21 +11,43 @@ const form = document.querySelector("form");
 const itemsLeft = document.getElementById("filter-left");
 const list = document.querySelector(".todo-list");
 const item = document.querySelector(".todo-item");
+
 let isActive = false;
 let isCompleted = false;
 let inputValue;
+
 filter.remove();
 clearCompleted.remove();
+
 function itemsLeftFn() {
-  itemsLeft.innerHTML = `${arr.filter((i) => !i.checked).length} 
-  ${arr.filter((i) => !i.checked).length === 1 ? "todo" : "todos"} left`;
+  itemsLeft.innerHTML = `${todos.filter((i) => !i.checked).length} 
+  ${todos.filter((i) => !i.checked).length === 1 ? "todo" : "todos"} left`;
+}
+function addItem(todos) {
+  const checkbox = document.createElement("input");
+  checkbox.className = "checkbox";
+  const todoElem = document.createElement("span");
+  checkbox.type = "checkbox";
+  const deleteSpan = document.createElement("span");
+  deleteSpan.innerHTML = "X";
+  const container = document.createElement("div");
+  container.id = Date.now();
+  container.append(checkbox, todoElem, deleteSpan);
+  todoElem.innerHTML = inputValue;
+  input.value = "";
+  todos.push({
+    id: container.id,
+    checked: checkbox.checked,
+    text: todoElem.innerHTML,
+  });
+  item.append(container);
 }
 input.addEventListener("input", (e) => {
   inputValue = e.target.value;
 });
 item.addEventListener("dblclick", (e) => {
   if (e.target.tagName == "SPAN" && e.target.innerHTML !== "X") {
-    let editting = arr.find((i) => i.id === e.target.closest("div").id);
+    let editting = todos.find((i) => i.id === e.target.closest("div").id);
     let refactoredText;
     let editInput = document.createElement("input");
     editInput.classList.add("edit-input");
@@ -53,7 +76,7 @@ item.addEventListener("dblclick", (e) => {
           ? e.target.closest("div").children[1].classList.add("line-through")
           : "";
         editting.text = refactoredText;
-        arr = arr.map((i) => {
+        todos = todos.map((i) => {
           if (i.id === e.target.closest("div").id) {
             return {
               ...i,
@@ -82,28 +105,28 @@ item.addEventListener("click", (e) => {
     return;
   }
 
-  arr = arr.filter((i) => i.id !== e.target.closest("div").id);
+  todos = todos.filter((i) => i.id !== e.target.closest("div").id);
   e.target.closest("div").remove();
   itemsLeftFn();
-  if (arr.length === 0) {
+  if (todos.length === 0) {
     filter.remove();
   }
-  if (arr.filter((i) => i.checked).length === 0) {
+  if (todos.filter((i) => i.checked).length === 0) {
     clearCompleted.remove();
   }
-  return arr;
+  return todos;
 });
 item.addEventListener("change", (e) => {
   if (e.target.tagName != "INPUT") {
     return;
   }
-  if (arr.filter((i) => !i.checked).length > 0) {
+  if (todos.filter((i) => !i.checked).length > 0) {
     filter.append(clearCompleted);
   }
-  let checkingItemIndex = arr.findIndex(
+  let checkingItemIndex = todos.findIndex(
     (i) => i.id === e.target.closest("div").id
   );
-  arr[checkingItemIndex].checked = e.target.checked;
+  todos[checkingItemIndex].checked = e.target.checked;
   itemsLeftFn();
   if (e.target.checked) {
     e.target.nextElementSibling.classList.add("line-through");
@@ -116,22 +139,22 @@ item.addEventListener("change", (e) => {
   if (isCompleted) {
     completedFilter();
   }
-  return arr;
+  return todos;
 });
 function activeFilter() {
-  let arrActive = arr.filter((i) => !i.checked);
-  item.innerHTML = arrActive
+  let todosActive = todos.filter((i) => !i.checked);
+  item.innerHTML = todosActive
     .map((i) => {
       return `<div id =${i.id}><input type = "checkbox" ${i.checked}><span ${
         i.checked ? 'class = "line-through"' : ""
       }>${i.text}</span><span>X</span></div>`;
     })
     .join("");
-  return arr;
+  return todos;
 }
 function completedFilter() {
-  let arrCompleted = arr.filter((i) => i.checked);
-  item.innerHTML = arrCompleted
+  let todosCompleted = todos.filter((i) => i.checked);
+  item.innerHTML = todosCompleted
     .map((i) => {
       return `<div id =${i.id}><input type = "checkbox" ${
         i.checked ? "checked" : false
@@ -140,7 +163,7 @@ function completedFilter() {
       }</span><span>X</span></div>`;
     })
     .join("");
-  return arr;
+  return todos;
 }
 active.addEventListener("click", (e) => {
   isActive = true;
@@ -151,7 +174,7 @@ active.addEventListener("click", (e) => {
 all.addEventListener("click", () => {
   isActive = false;
   isCompleted = false;
-  let all = [...arr];
+  let all = [...todos];
   item.innerHTML = all
     .map((i) => {
       return `<div id =${i.id}><input type = "checkbox" ${
@@ -161,7 +184,7 @@ all.addEventListener("click", () => {
       }</span><span>X</span></div>`;
     })
     .join("");
-  return arr;
+  return todos;
 });
 completed.addEventListener("click", () => {
   isCompleted = true;
@@ -170,8 +193,8 @@ completed.addEventListener("click", () => {
   }
 });
 clearCompleted.addEventListener("click", () => {
-  arr = arr.filter((i) => !i.checked);
-  item.innerHTML = arr
+  todos = todos.filter((i) => !i.checked);
+  item.innerHTML = todos
     .map((i) => {
       return `<div id =${i.id}><input type = "checkbox" ${
         i.checked ? "checked" : false
@@ -182,42 +205,22 @@ clearCompleted.addEventListener("click", () => {
 });
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-  function addItem(arr) {
-    const checkbox = document.createElement("input");
-    checkbox.className = "checkbox";
-    const todoElem = document.createElement("span");
-    checkbox.type = "checkbox";
-    const deleteSpan = document.createElement("span");
-    deleteSpan.innerHTML = "X";
-    const container = document.createElement("div");
-    container.id = Date.now();
-    container.append(checkbox, todoElem, deleteSpan);
-    todoElem.innerHTML = inputValue;
-    input.value = "";
-    arr.push({
-      id: container.id,
-      checked: checkbox.checked,
-      text: todoElem.innerHTML,
-    });
-    item.append(container);
-  }
-  addItem(arr);
-
+  addItem(todos);
   itemsLeftFn();
-  if (arr.length === 1) {
+  if (todos.length === 1) {
     list.append(filter);
   }
 
   selectAll.addEventListener("click", (e) => {
     e.target.classList.toggle("selectAll-color");
-    let filteredChecks = arr.filter((i) => i.checked).length;
-    arr = arr.map((i) => {
+    let filteredChecks = todos.filter((i) => i.checked).length;
+    todos = todos.map((i) => {
       return {
         ...i,
-        checked: filteredChecks !== arr.length ? true : false,
+        checked: filteredChecks !== todos.length ? true : false,
       };
     });
-    item.innerHTML = arr
+    item.innerHTML = todos
       .map((i) => {
         return `<div id =${i.id}><input type = "checkbox" ${
           i.checked ? "checked" : ""
